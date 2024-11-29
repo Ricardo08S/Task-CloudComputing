@@ -1,0 +1,19 @@
+Alias /phpmyadmin /usr/share/phpmyadmin
+
+<Directory /usr/share/phpmyadmin>
+    Options SymLinksIfOwnerMatch
+    DirectoryIndex index.php
+
+    <IfModule mod_php8.1.c>  # Adjust to your installed PHP version
+        php_admin_value upload_tmp_dir /var/lib/phpmyadmin/tmp
+        php_admin_value open_basedir /usr/share/phpmyadmin/:/usr/share/doc/phpmyadmin/:/etc/phpmyadmin/:/var/lib/phpmyadmin/:/usr/share/php/:/usr/share/javascript/
+    </IfModule>
+</Directory>
+
+# Deny access to sensitive directories
+<Directory /usr/share/phpmyadmin/templates>
+    Require all denied
+</Directory>
+<Directory /usr/share/phpmyadmin/libraries>
+    Require all denied
+</Directory>

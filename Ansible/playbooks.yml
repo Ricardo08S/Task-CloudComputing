@@ -1,0 +1,14 @@
+---
+- name: Setup Apache Web Server
+  hosts: vmWeb 
+  become: true
+  remote_user: rics
+  roles:
+    - apache
+
+- name: phpMyAdmin & MySQL
+  hosts: vmDB
+  become: true
+  remote_user: rics
+  roles:
+    - phpmyadmin

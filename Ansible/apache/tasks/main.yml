@@ -1,0 +1,51 @@
+---
+- name: Install Apache2 and Dependencies
+  ansible.builtin.apt:
+    name:
+      - apache2
+      - apt-transport-https
+      - ca-certificates
+      - software-properties-common
+    state: present
+    update_cache: true
+
+- name: Clone Project from GitHub
+  ansible.builtin.git:
+    repo: https://github.com/rm77/web-sample-6.git
+    dest: /var/www/html/web-sample-6
+    clone: true
+    force: yes
+  notify:
+    - Restart Apache
+
+- name: Add safe directory for Git
+  ansible.builtin.command:
+    cmd: git config --global --add safe.directory /var/www/html/web-sample-6
+  become: true
+  notify:
+    - Restart Apache
+
+- name: Copy Apache Default Config
+  ansible.builtin.template:
+    src: 000-default.conf.j2
+    dest: /etc/apache2/sites-available/000-default.conf
+    mode: '0644'
+
+- name: Set Directory Permissions
+  ansible.builtin.file:
+    path: /var/www/html/web-sample-6
+    state: directory
+    recurse: true
+    mode: "775"
+  notify:
+    - Restart Apache
+
+- name: Set Ownership for Web Directory
+  ansible.builtin.file:
+    path: /var/www/html/web-sample-6
+    owner: www-data
+    group: www-data
+    recurse: true
+    mode: "0775"
+  notify:
+    - Restart Apache

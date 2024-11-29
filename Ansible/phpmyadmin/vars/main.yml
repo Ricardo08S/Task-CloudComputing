@@ -1,0 +1,4 @@
+---
+db_name: rics_db # fill your database name
+db_user: rics # fill your username for db
+db_pass: rics # fill your password for db
