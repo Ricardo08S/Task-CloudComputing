@@ -1,7 +1,7 @@
 .PHONY: tofu-run tofu-destroy ansible-run all
 
 tofu-run:
-	cd OpenTofu && tofu init && tofu plan > plan.out && tofu apply && virsh list --all
+	cd OpenTofu && tofu init && tofu plan && tofu apply && virsh list --all
 
 
 tofu-destroy:

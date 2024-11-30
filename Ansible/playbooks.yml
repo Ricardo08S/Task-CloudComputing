@@ -4,11 +4,11 @@
   become: true
   remote_user: rics
   roles:
-    - apache
+    - webserver
 
 - name: phpMyAdmin & MySQL
   hosts: vmDB
   become: true
   remote_user: rics
   roles:
-    - phpmyadmin
+    - database

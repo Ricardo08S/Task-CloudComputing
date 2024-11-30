@@ -10,5 +10,8 @@ variable "ubuntu_image" {
 
 variable "vm" {
   description = "List of VM"
-  default     = ["mesin-1", "mesin-2"]
+  default     = [
+    "mesin-web", 
+    "mesin-2=db"
+    ]
 }
