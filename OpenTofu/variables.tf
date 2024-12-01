@@ -12,6 +12,6 @@ variable "vm" {
   description = "List of VM"
   default     = [
     "mesin-web", 
-    "mesin-2=db"
+    "mesin-db"
     ]
 }

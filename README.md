@@ -59,6 +59,10 @@
     make tofu-destroy
     ```
 
+## Architecture for this Project
+
+![Architecture](/documentation/Architecture.png)
+
 
 ## Catatan:
 
