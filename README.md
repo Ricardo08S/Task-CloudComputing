@@ -45,6 +45,11 @@
     ```
     make tofu-run
     ```
+
+3. Configuration for vm <br>
+   - Setelah mendapatkan alamat ip untuk vm yang akan digunakan, coba login pertama kali ke 2 vm tersebut menggunakan credential yang dibuat. <br>
+   - Lalu juga sesuaikan ip yang didapatkan tersebut pada file [inventory.ini](/Ansible/inventory.ini) pada directory ansible
+
 2. Configuration for Webserver & Database
     ```
     make ansible-run
