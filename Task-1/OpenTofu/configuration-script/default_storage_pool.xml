@@ -1,0 +1,11 @@
+<pool type='dir'>
+  <name>default</name>
+  <target>
+    <path>/tmp</path>
+    <permissions>
+      <mode>0755</mode>
+      <owner>your owner libvert-qemu</owner> using <!-- run `getent passwd libvirt-qemu` -->
+      <group>your group libvirt</group> <!-- run `getent group libvirt` -->
+    </permissions>
+  </target>
+</pool>

@@ -1,0 +1,108 @@
+---
+- name: Update system and install prerequisites
+  ansible.builtin.apt:
+    name:
+      - aptitude
+      - mysql-server
+      - mysql-client
+      - python3-mysqldb
+      - apt-transport-https
+      - ca-certificates
+      - software-properties-common
+    state: present
+    update_cache: true
+
+- name: Create MySQL Database
+  community.mysql.mysql_db:
+    name: "{{ db_name }}"
+    state: present
+
+- name: Create MySQL User
+  community.mysql.mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_pass }}"
+    encrypted: false
+    priv: "{{ db_name }}.*:ALL"
+    state: present
+
+- name: Allow MySQL remote login
+  ansible.builtin.lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address'
+    line: 'bind-address = 0.0.0.0'
+    backup: true
+  notify:
+    - Restart MySQL
+
+- name: Add PHP repository
+  ansible.builtin.apt_repository:
+    repo: "ppa:ondrej/php"
+    state: present
+
+- name: Install PHP, phpMyAdmin, and dependencies
+  ansible.builtin.apt:
+    name:
+      - php8.0-mysql
+      - php8.0-mbstring
+      - php8.0-xml
+      - php8.0-curl
+      - php8.0-cli
+      - php8.0-common
+      - php8.0-gd
+      - libapache2-mod-php8.0
+      - phpmyadmin
+      - debconf-utils
+    state: present
+    update_cache: true
+
+- name: Configure debconf for phpMyAdmin
+  debconf:
+    name: phpmyadmin
+    question: "{{ item.question }}"
+    value: "{{ item.value }}"
+    vtype: "{{ item.vtype }}"
+  loop:
+    - { question: 'phpmyadmin/dbconfig-install', value: 'true', vtype: 'boolean' }
+    - { question: 'phpmyadmin/app-password-confirm', value: 'password', vtype: 'password' }
+    - { question: 'phpmyadmin/mysql/admin-pass', value: '{{ db_pass }}', vtype: 'password' }
+    - { question: 'phpmyadmin/mysql/app-pass', value: '{{ db_pass }}', vtype: 'password' }
+    - { question: 'phpmyadmin/reconfigure-webserver', value: 'apache2', vtype: 'multiselect' }
+
+- name: Configure phpMyAdmin Apache
+  ansible.builtin.template:
+    src: phpmyadmin.conf.j2
+    dest: /etc/apache2/conf-available/phpmyadmin.conf
+    owner: rics
+    group: rics
+    mode: '0644'
+
+- name: Enable phpMyAdmin Apache Configuration
+  ansible.builtin.command:
+    cmd: a2enconf phpmyadmin.conf
+  notify:
+    - Restart Apache
+
+- name: Enable PHP 8.0 module
+  ansible.builtin.command:
+    cmd: a2enmod php8.0
+
+- name: Enable Apache rewrite module
+  ansible.builtin.command:
+    cmd: a2enmod rewrite
+
+- name: Set Mode for phpMyAdmin
+  ansible.builtin.file:
+    path: /usr/share/phpmyadmin
+    state: directory
+    recurse: true
+    mode: "775"
+
+- name: Set Ownership for phpMyAdmin
+  ansible.builtin.file:
+    path: /usr/share/phpmyadmin
+    owner: www-data
+    group: www-data
+    recurse: true
+    mode: "0775"
+  notify:
+    - Restart Apache
