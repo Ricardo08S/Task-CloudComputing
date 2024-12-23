@@ -10,5 +10,3 @@ docker container run \
 	--workdir /data \
 	alpine:3.18 \
 	/bin/sh /script/getjokes.sh
-
-

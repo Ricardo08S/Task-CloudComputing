@@ -4,12 +4,10 @@ import os
 from io import BytesIO
 import logging
 
-# Setup Flask App
 app = Flask(__name__)
 UPLOAD_FOLDER = "/app/generated_qrcodes"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Setup Logging
 logging.basicConfig(level=logging.DEBUG)
 
 @app.route('/generate', methods=['POST'])
