@@ -46,8 +46,7 @@
             if (data.error) {
                 resultDiv.innerHTML = `<p class="error">${data.error}</p>`;
             } else {
-                const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: toCurrency });
-                resultDiv.innerHTML = `<p>${formatter.format(amount)} ${fromCurrency} = ${formatter.format(data.converted)} ${toCurrency}</p>`;
+                resultDiv.innerHTML = `<p>${data.originalAmount} = ${data.converted}</p>`;
             }
         });
     </script>

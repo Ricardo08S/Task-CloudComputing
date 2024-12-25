@@ -7,7 +7,12 @@ const exchangeRates = {
 };
 
 const formatCurrency = (amount, currency) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency }).format(amount);
+    try {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency }).format(amount);
+    } catch (err) {
+        console.error(`Error formatting currency: ${err.message}`);
+        return `Invalid Currency: ${currency}`;
+    }
 };
 
 app.use(express.static('public'));
@@ -19,13 +24,20 @@ app.get('/convert', (req, res) => {
         return res.json({ error: 'Missing parameters' });
     }
 
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount)) {
+        return res.json({ error: 'Amount must be a valid number' });
+    }
+
     if (!exchangeRates[from] || !exchangeRates[to]) {
         return res.json({ error: 'Unsupported currency' });
     }
 
-    const converted = (amount / exchangeRates[from]) * exchangeRates[to];
-    res.json({ 
-        converted: formatCurrency(converted, to) 
+    const converted = (numericAmount / exchangeRates[from]) * exchangeRates[to];
+    const formattedConverted = formatCurrency(converted, to);
+    res.json({
+        originalAmount: formatCurrency(numericAmount, from),
+        converted: formattedConverted,
     });
 });
 
