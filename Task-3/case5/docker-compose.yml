@@ -8,6 +8,6 @@ services:
       - "5008:5008"
     volumes:
       - ./app:/app
-      - ./generated_qrcodes:/app/generated_qrcodes
+      - /root/generated_qrcodes:/root/generated_qrcodes
     command: >
       sh -c "pip install -r requirements.txt && python app.py"

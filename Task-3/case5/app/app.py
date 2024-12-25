@@ -1,11 +1,13 @@
-from flask import Flask, request, jsonify, send_file, Response
+from flask import Flask, request, jsonify, Response
 import qrcode
 import os
 from io import BytesIO
 import logging
+import time
 
 app = Flask(__name__)
-UPLOAD_FOLDER = "/app/generated_qrcodes"
+
+UPLOAD_FOLDER = os.path.expanduser("/root/generated_qrcodes")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 logging.basicConfig(level=logging.DEBUG)
@@ -13,20 +15,28 @@ logging.basicConfig(level=logging.DEBUG)
 @app.route('/generate', methods=['POST'])
 def generate_qrcode():
     try:
-        # Validate input
         data = request.json.get("data")
         if not data:
             app.logger.error("No data provided in request")
             return jsonify({"error": "No data provided"}), 400
 
-        # Generate QR Code
         qr = qrcode.make(data)
         buffer = BytesIO()
         qr.save(buffer, format="PNG")
         buffer.seek(0)
 
-        app.logger.info("QR Code generated successfully and returned as response")
-        return Response(buffer, mimetype='image/png')
+        timestamp = int(time.time())
+        qr_code_filename = f"{timestamp}.png"
+        file_path = os.path.join(UPLOAD_FOLDER, qr_code_filename)
+
+        app.logger.info(f"Saving QR code to {file_path}")
+
+        with open(file_path, 'wb') as f:
+            f.write(buffer.getvalue())
+
+        app.logger.info(f"QR Code saved successfully: {file_path}")
+
+        return jsonify({"message": "QR Code generated and saved", "file": qr_code_filename})
 
     except Exception as e:
         app.logger.error(f"Error generating QR Code: {e}")
