@@ -61,7 +61,7 @@
 
 ## Architecture for this Project
 
-![Architecture](/documentation/Architecture.png)
+![Architecture](documentation/Architecture.png)
 
 
 ## Catatan:
